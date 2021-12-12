@@ -17,6 +17,7 @@ import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
+
     private final UserDetailsService userDetailsService;
 
     @Value("${jwt.secret}")
@@ -24,7 +25,7 @@ public class JwtTokenProvider {
     @Value("${jwt.header}")
     private String authorizationHeader;
     @Value("${jwt.expiration}")
-    private Long validityInMilliseconds;
+    private long validityInMilliseconds;
 
     public JwtTokenProvider(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
@@ -40,13 +41,13 @@ public class JwtTokenProvider {
         claims.put("role", role);
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds * 1000);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
-                .signWith(SignatureAlgorithm.ES256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
-
     }
 
     public boolean validateToken(String token) {
